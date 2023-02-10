@@ -3,7 +3,3 @@ node_modules
 dist
 
 .DS_Store
-
-!dist/svelte-app Setup 1.0.0.exe
-!dist/svelte-app-1.0.0.AppImage
-!dist/svelte-app-1.0.0.dmg
