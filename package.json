@@ -1,9 +1,9 @@
 {
   "main": "index.js",
-  "name": "svelte-app",
-  "version": "1.0.0",
+  "name": "jackery-discount-app",
+  "version": "1.1.0",
   "private": true,
-  "description": "A Svelte app",
+  "description": "An app that will get you a discount on your Jackery purchase or maybe give you one for free.",
   "author": "Kireobat",
   "scripts": {
     "build": "rollup -c",
@@ -34,8 +34,8 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
-    "puppeteer-core": "^19.6.3",
-    "puppeteer-in-electron": "^3.0.5",
+    "fs": "^0.0.1-security",
+    "puppeteer": "^19.6.3",
     "sirv-cli": "^2.0.0"
   }
 }

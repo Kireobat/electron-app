@@ -3,7 +3,7 @@
 	import StartBtn from './assets/StartBtn.svelte';
 
 	//The code Below will call functions from index.js (The main process)
-	
+
 	console.log("I'm going to call index.js's 'myfunc'")
 	window.api.invoke('myfunc', [1, 2, 3])
 		.then((result) => {
@@ -14,8 +14,28 @@
 		})
 		
 	//----------------------------------------------
+	
+	const runPuppeteerFunc = () => {
+		console.log("Calling runPuppeteer from index.js")
+		window.api.invoke('run-puppeteer', [])
+			.then((result) => {
+				console.log(result) // will print the data
+			})
+			.catch((err) => {
+				console.log(err) // will print "error"
+			})
+		}
 
-
+	const showCodes = () => {
+		console.log("Calling showCodes from index.js")
+		window.api.invoke('show-codes', [])
+			.then((result) => {
+				console.log(result) // will print the data
+			})
+			.catch((err) => {
+				console.log(err) // will print "error"
+			})
+	}
 </script>
 
 <main>
@@ -23,10 +43,10 @@
 		<h1 class="title">Jackery Discount Retriver</h1>
 	</div>
 	<div class="btnHolder">
-		<StartBtn/>
-		<StopBtn/>
+		<button on:click={runPuppeteerFunc}>Run Puppeteer</button>
+		<button on:click={showCodes}>Show Codes</button>
 	</div>
-	<button id="run-puppeteer">Run Puppeteer</button>
+	
 	
 </main>
 

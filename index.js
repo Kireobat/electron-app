@@ -1,8 +1,11 @@
-const { app, BrowserWindow, contextBridge} = require('electron');
+const { app, BrowserWindow, contextBridge, shell} = require('electron');
 const path = require('path');
-const pie = require('puppeteer-in-electron');
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const { ipcMain } = require('electron');
+const fs = require('fs');
+
+fs.writeFileSync('output.txt', '');
+console.log("output.txt created")
 
 createWindow = async () => {
     const mainWindow = new BrowserWindow({
@@ -34,19 +37,84 @@ ipcMain.handle("myfunc", async (event, arg) => {
     });
 });
 
-const puppeteerFunction = async () => {
-    await pie.initialize(app);
-    const browser = await pie.connect(app, puppeteer);
+//---------------------------------------------------------------------
 
-    const window = new BrowserWindow();
-    const url = 'https://www.google.com';
-    await window.loadURL(url);
+// Show output.txt in folder
 
-    const page = await pie.getPage(browser, window);
-    console.log(page.url());
-    window.destroy();
+ipcMain.handle("show-codes", async (event, arg) => {
+    return new Promise((resolve, reject) => {
+        // do something
+        shell.showItemInFolder(path.join(__dirname, 'output.txt'));
+        if (true) {
+            resolve("success");
+        } else {
+            reject("error");
+        }
+    });
+});
+
+const appendFile = (data) => {
+    fs.appendFileSync('output.txt', data);
+    console.log('Saved!');
+}
+let i = 0;
+let randomMail = "randomMail" + Math.floor(Math.random()) +"Iter"+i+ "@random.com";
+
+console.log("randomMail: " + randomMail)
+
+let data = "";
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const puppeteerFunction = async() => {
+
+    console.log("puppeteer started")
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto('https://www.jackery.com');
+
+
+    randomMail = "randomMail" + Math.floor(Math.random() * 10000000) +"Iter"+i+ "@random.com";
+
+    console.log("randomMail: " + randomMail)
+    await page.type('input[id="subscribeEmail"]', randomMail)
+
+    await page.click('img[class="J-gift"]')
+
+    await delay(5000);
+
+    const codeText = await page.$('[class="J-code-text"]');
+    const descText = await page.$('[class="percentage-wrap"]');
+    const validForText = await page.$('[class="time-wrap J-date-text"]');
+
+    let code = await (await codeText.getProperty('textContent')).jsonValue();
+    let desc = await (await descText.getProperty('textContent')).jsonValue();
+    let validFor = await (await validForText.getProperty('textContent')).jsonValue();
+
+    data = { code, desc, validFor};
+
+    await browser.close();
+    return data;
 };
 
-global.HelloWorld = function(name) {
-    return "hello " + name;
-}
+
+
+ipcMain.handle("run-puppeteer", async (event, arg) => {
+
+
+    await puppeteerFunction();
+
+    let content = "----------------"+"\n"+"Code: " + data.code + "\n" + "Description: " + data.desc + "\n" + "Valid For: " + data.validFor + "\n";
+
+    appendFile(content);
+    return new Promise((resolve, reject) => {
+        // do something
+        
+        if (true) {
+            resolve("success");
+        } else {
+            reject("error");
+        }
+    });
+});
